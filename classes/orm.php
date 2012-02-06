@@ -13,10 +13,10 @@ class ORM extends Database_Query_Builder_Select {
     
     /**
      * Creates and returns a new model.
-	 *
-	 * @param   string  $model  Model name
-	 * @param   mixed   $id     Parameter for find()
-	 * @return  ORM
+     * 
+     * @param   string  $model  Model name
+     * @param   mixed   $id     Parameter for find()
+     * @return  ORM
      */
     public static function factory($model, $id = NULL)
     {
@@ -24,7 +24,6 @@ class ORM extends Database_Query_Builder_Select {
         
         return new $model($id);
     }
-    
     
     // Database
     protected $_db = NULL;
@@ -43,7 +42,7 @@ class ORM extends Database_Query_Builder_Select {
     
     // Relationships
     protected $_has_one = array();
-	protected $_has_many = array();
+    protected $_has_many = array();
     protected $_belongs_to = array();
     
     // Values
@@ -53,12 +52,12 @@ class ORM extends Database_Query_Builder_Select {
     protected $_row = array();
     
     /**
-	 * Constructs a new model and loads a record
-	 *
-	 * @param   mixed $id Parameter for find
-	 * @return  void
-	 */
-	public function __construct($id = NULL)
+     * Constructs a new model and loads a record
+     * 
+     * @param   mixed $id Parameter for find
+     * @return  void
+     */
+    public function __construct($id = NULL)
     {
         $this->_model_name = strtolower(substr(get_class($this), 6));
         
@@ -72,19 +71,19 @@ class ORM extends Database_Query_Builder_Select {
             }
         }
         
-		if ($id !== NULL)
+        if ($id !== NULL)
         {
             if (is_array($id))
-			{
-				foreach ($id as $column => $value)
-				{
-					$this->where($column, '=', $value);
-				}
-			}
-			else
-			{
-				$this->where($this->_primary_key, '=', $id);
-			}
+            {
+                foreach ($id as $column => $value)
+                {
+                    $this->where($column, '=', $value);
+                }
+            }
+            else
+            {
+                $this->where($this->_primary_key, '=', $id);
+            }
             
             $this->find();
         }
@@ -95,13 +94,13 @@ class ORM extends Database_Query_Builder_Select {
         }
         
         $this->_prepare_relations();
-	}
+    }
     
     /**
      * Handles retrieval of all model values and relationships.
-	 *
-	 * @param   string  column name
-	 * @return  mixed
+     * 
+     * @param   string  column name
+     * @return  mixed
      */
     public function __get($column)
     {
@@ -111,52 +110,52 @@ class ORM extends Database_Query_Builder_Select {
                 $this->_belongs_to[$column]['model'], 
                 $this->_row[$this->_belongs_to[$column]['foreign_key']]
             );
-		}
+        }
         elseif (isset($this->_has_one[$column]))
         {
             return ORM::factory($this->_has_one[$column]['model'])
                 ->where($this->_has_one[$column]['foreign_key'], '=', $this->primary_val())
                 ->find();
-		}
-		elseif (isset($this->_has_many[$column]))
-		{
-			$model = ORM::factory($this->_has_many[$column]['model']);
-
-			if (isset($this->_has_many[$column]['through']))
-			{
-				$through = $this->_has_many[$column]['through'];
-
-				$join_col1 = $through.'.'.$this->_has_many[$column]['far_key'];
-				$join_col2 = $model->table_name().'.'.$model->primary_key();
-
-				$model->join($through)->on($join_col1, '=', $join_col2);
-
-				$col = $through.'.'.$this->_has_many[$column]['foreign_key'];
-			}
-			else
-			{
-				$col = $this->_has_many[$column]['foreign_key'];
-			}
-
-			return $model->where($col, '=', $this->primary_val());
-		}
+        }
+        elseif (isset($this->_has_many[$column]))
+        {
+            $model = ORM::factory($this->_has_many[$column]['model']);
+            
+            if (isset($this->_has_many[$column]['through']))
+            {
+                $through = $this->_has_many[$column]['through'];
+                
+                $join_col1 = $through.'.'.$this->_has_many[$column]['far_key'];
+                $join_col2 = $model->table_name().'.'.$model->primary_key();
+                
+                $model->join($through)->on($join_col1, '=', $join_col2);
+                
+                $col = $through.'.'.$this->_has_many[$column]['foreign_key'];
+            }
+            else
+            {
+                $col = $this->_has_many[$column]['foreign_key'];
+            }
+            
+            return $model->where($col, '=', $this->primary_val());
+        }
         elseif (isset($this->_row[$column]))
         {
             return $this->_row[$column];
         }
         else
-		{
-			throw new Kohana_Exception('The :property property does not exist in the :class class',
-				array(':property' => $column, ':class' => get_class($this)));
-		}
+        {
+            throw new Kohana_Exception('The :property property does not exist in the :class class',
+                array(':property' => $column, ':class' => get_class($this)));
+        }
     }
     
     /**
      * Handles setting of all model values.
-	 *
-	 * @param   string  column name
-	 * @param   mixed   column value
-	 * @return  void
+     * 
+     * @param   string  column name
+     * @param   mixed   column value
+     * @return  void
      */
     public function __set($column, $value)
     {
@@ -174,8 +173,8 @@ class ORM extends Database_Query_Builder_Select {
      * Sets the value
      * 
      * @param   string  column name
-	 * @param   mixed   column value
-	 * @return  $this
+     * @param   mixed   column value
+     * @return  $this
      */
     public function set($column, $value)
     {
@@ -198,7 +197,7 @@ class ORM extends Database_Query_Builder_Select {
      * Sets the values from an array
      * 
      * @param  array  Array of column => value
-	 * @return $this
+     * @return $this
      */
     public function values(array $values)
     {
@@ -212,9 +211,9 @@ class ORM extends Database_Query_Builder_Select {
     
     /**
      * Finds and loads a single database row into the model.
-	 *
-	 * @param   mixed  primary key
-	 * @return  $this
+     * 
+     * @param   mixed  primary key
+     * @return  $this
      */
     public function find($id = NULL)
     {
@@ -233,8 +232,8 @@ class ORM extends Database_Query_Builder_Select {
     
     /**
      * Finds multiple database rows and returns an iterator of the rows found.
-	 *
-	 * @return  Database_Result
+     * 
+     * @return  Database_Result
      */
     public function find_all()
     {
@@ -243,8 +242,8 @@ class ORM extends Database_Query_Builder_Select {
     
     /**
      * Count the number of rows in the current table.
-	 *
-	 * @return  int
+     * 
+     * @return  int
      */
     public function count_all()
     {
@@ -252,7 +251,7 @@ class ORM extends Database_Query_Builder_Select {
             ->from($this->_table_name)
             ->where_array($this->_where)
             ->execute($this->_db)
-			->get('count');
+            ->get('count');
     }
     
     /**
@@ -299,9 +298,9 @@ class ORM extends Database_Query_Builder_Select {
      * Adds a new relationship to between this model and another.
      * 
      * @param   string   alias of the has_many "through" relationship
-	 * @param   ORM      related ORM model
-	 * @param   array    additional data to store in "through"/pivot table
-	 * @return  int
+     * @param   ORM      related ORM model
+     * @param   array    additional data to store in "through"/pivot table
+     * @return  int
      */
     public function add($alias, ORM $model, array $data = NULL)
     {
@@ -322,35 +321,35 @@ class ORM extends Database_Query_Builder_Select {
     
     /**
      * Tests if this object has a relationship to a different model.
-	 *
-	 * @param   string   alias of the has_many "through" relationship
-	 * @param   ORM      related ORM model
-	 * @return  boolean
+     * 
+     * @param   string   alias of the has_many "through" relationship
+     * @param   ORM      related ORM model
+     * @return  boolean
      */
     public function has($alias, ORM $model)
-	{
-		return (bool) DB::select(array('COUNT("*")', 'count'))
-			->from($this->_has_many[$alias]['through'])
-			->where($this->_has_many[$alias]['foreign_key'], '=', $this->primary_val())
-			->where($this->_has_many[$alias]['far_key'], '=', $model->primary_val())
+    {
+        return (bool) DB::select(array('COUNT("*")', 'count'))
+            ->from($this->_has_many[$alias]['through'])
+            ->where($this->_has_many[$alias]['foreign_key'], '=', $this->primary_val())
+            ->where($this->_has_many[$alias]['far_key'], '=', $model->primary_val())
             ->execute($this->_db)
-			->get('count');
-	}
+            ->get('count');
+    }
     
     /**
      * Removes a relationship between this model and another.
-	 *
-	 * @param   string   alias of the has_many "through" relationship
-	 * @param   ORM      related ORM model
-	 * @return  int
+     * 
+     * @param   string   alias of the has_many "through" relationship
+     * @param   ORM      related ORM model
+     * @return  int
      */
     public function remove($alias, ORM $model)
-	{
-		return DB::delete($this->_has_many[$alias]['through'])
-			->where($this->_has_many[$alias]['foreign_key'], '=', $this->primary_val())
-			->where($this->_has_many[$alias]['far_key'], '=', $model->primary_val())
-			->execute($this->_db);
-	}
+    {
+        return DB::delete($this->_has_many[$alias]['through'])
+            ->where($this->_has_many[$alias]['foreign_key'], '=', $this->primary_val())
+            ->where($this->_has_many[$alias]['far_key'], '=', $model->primary_val())
+            ->execute($this->_db);
+    }
     
     /**
      * Returns the name of the current model
@@ -373,29 +372,29 @@ class ORM extends Database_Query_Builder_Select {
     }
     
     /**
-	 * Returns the primary key
-	 *
-	 * @return  string
-	 */
-	public function primary_key()
-	{
-		return $this->_primary_key;
-	}
+     * Returns the primary key
+     * 
+     * @return  string
+     */
+    public function primary_key()
+    {
+        return $this->_primary_key;
+    }
     
     /**
-	 * Returns the value of the primary key
-	 *
-	 * @return  mixed
-	 */
-	public function primary_val()
-	{
-		return $this->_primary_val;
-	}
+     * Returns the value of the primary key
+     * 
+     * @return  mixed
+     */
+    public function primary_val()
+    {
+        return $this->_primary_val;
+    }
     
     /**
      * Returns the result as array
-	 *
-	 * @return  array
+     * 
+     * @return  array
      */
     public function as_array()
     {
@@ -403,14 +402,14 @@ class ORM extends Database_Query_Builder_Select {
     }
     
     /**
-	 * The result is loaded or not
-	 *
-	 * @return  boolean
-	 */
-	public function loaded()
-	{
-		return ($this->_primary_val !== NULL);
-	}
+     * The result is loaded or not
+     * 
+     * @return  boolean
+     */
+    public function loaded()
+    {
+        return ($this->_primary_val !== NULL);
+    }
     
     /**
      * Loads the result
@@ -455,31 +454,31 @@ class ORM extends Database_Query_Builder_Select {
      */
     protected function _prepare_relations()
     {
-		foreach ($this->_belongs_to as $alias => $details)
+        foreach ($this->_belongs_to as $alias => $details)
         {
             $defaults['model'] = $alias;
-			$defaults['foreign_key'] = $alias.$this->_foreign_key_suffix;
-
-			$this->_belongs_to[$alias] = array_merge($defaults, $details);
-		}
-
-		foreach ($this->_has_one as $alias => $details)
-		{
-			$defaults['model'] = $alias;
-			$defaults['foreign_key'] = $this->_model_name.$this->_foreign_key_suffix;
-
-			$this->_has_one[$alias] = array_merge($defaults, $details);
-		}
-
-		foreach ($this->_has_many as $alias => $details)
-		{
-			$defaults['model'] = Inflector::singular($alias);
-			$defaults['foreign_key'] = $this->_model_name.$this->_foreign_key_suffix;
-			$defaults['through'] = NULL;
-			$defaults['far_key'] = Inflector::singular($alias).$this->_foreign_key_suffix;
-
-			$this->_has_many[$alias] = array_merge($defaults, $details);
-		}
-	}
+            $defaults['foreign_key'] = $alias.$this->_foreign_key_suffix;
+            
+            $this->_belongs_to[$alias] = array_merge($defaults, $details);
+        }
+        
+        foreach ($this->_has_one as $alias => $details)
+        {
+            $defaults['model'] = $alias;
+            $defaults['foreign_key'] = $this->_model_name.$this->_foreign_key_suffix;
+            
+            $this->_has_one[$alias] = array_merge($defaults, $details);
+        }
+        
+        foreach ($this->_has_many as $alias => $details)
+        {
+            $defaults['model'] = Inflector::singular($alias);
+            $defaults['foreign_key'] = $this->_model_name.$this->_foreign_key_suffix;
+            $defaults['through'] = NULL;
+            $defaults['far_key'] = Inflector::singular($alias).$this->_foreign_key_suffix;
+            
+            $this->_has_many[$alias] = array_merge($defaults, $details);
+        }
+    }
     
 } // End ORM
