@@ -307,7 +307,7 @@ class Kohana_ORM extends Database_Query_Builder_Select {
      * @param   string   alias of the has_many "through" relationship
      * @param   ORM      related ORM model
      * @param   array    additional data to store in "through"/pivot table
-     * @return  int
+     * @return  array    list of insert id and rows created
      */
     public function add($alias, ORM $model, array $data = NULL)
     {
@@ -348,7 +348,7 @@ class Kohana_ORM extends Database_Query_Builder_Select {
      * 
      * @param   string   alias of the has_many "through" relationship
      * @param   ORM      related ORM model
-     * @return  int
+     * @return  int      number of rows affected
      */
     public function remove($alias, ORM $model)
     {
