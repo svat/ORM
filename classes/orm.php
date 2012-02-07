@@ -257,7 +257,7 @@ class ORM extends Database_Query_Builder_Select {
     /**
      * Creates a new row
      * 
-     * @return  int
+     * @return  array  list of insert id and rows created
      */
     public function create()
     {
@@ -270,7 +270,7 @@ class ORM extends Database_Query_Builder_Select {
     /**
      * Updates a single row or multiple rows
      * 
-     * @return  int
+     * @return  int  number of rows affected
      */
     public function update()
     {
@@ -284,7 +284,7 @@ class ORM extends Database_Query_Builder_Select {
     /**
      * Deletes a single row or multiple rows
      * 
-     * @return  int
+     * @return  int number of rows affected
      */
     public function delete()
     {
