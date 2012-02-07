@@ -257,14 +257,25 @@ class Kohana_ORM extends Database_Query_Builder_Select {
     /**
      * Creates a new row
      * 
-     * @return  array  list of insert id and rows created
+     * @return  mixed  insert id or false
      */
     public function create()
     {
-        return DB::insert($this->_table_name)
+        list($id, $count) = DB::insert($this->_table_name)
             ->columns(array_keys($this->_set))
             ->values(array_values($this->_set))
             ->execute($this->_db);
+        
+        if ((bool)$count)
+        {
+            $this->_primary_val = $id;
+        }
+        else
+        {
+            $id = FALSE;
+        }
+        
+        return $id;
     }
     
     /**
