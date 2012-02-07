@@ -268,14 +268,10 @@ class Kohana_ORM extends Database_Query_Builder_Select {
         
         if ((bool)$count)
         {
-            $this->_primary_val = $id;
-        }
-        else
-        {
-            $id = FALSE;
+            return $this->_primary_val = $id;
         }
         
-        return $id;
+        return FALSE;
     }
     
     /**
