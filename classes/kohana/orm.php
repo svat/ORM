@@ -257,10 +257,16 @@ class Kohana_ORM extends Database_Query_Builder_Select {
     /**
      * Creates a new row
      * 
+     * @param   array  values
      * @return  mixed  insert id or false
      */
-    public function create()
+    public function create(array $values = NULL)
     {
+        if (is_array($values))
+        {
+            $this->values($values);
+        }
+        
         list($id, $count) = DB::insert($this->_table_name)
             ->columns(array_keys($this->_set))
             ->values(array_values($this->_set))
@@ -277,10 +283,16 @@ class Kohana_ORM extends Database_Query_Builder_Select {
     /**
      * Updates a single row or multiple rows
      * 
-     * @return  int  number of rows affected
+     * @param   array  values
+     * @return  int    number of rows updated
      */
-    public function update()
+    public function update(array $values = NULL)
     {
+        if (is_array($values))
+        {
+            $this->values($values);
+        }
+        
         return DB::update($this->_table_name)
             ->set($this->_set)
             ->where_array($this->_where)
@@ -291,7 +303,7 @@ class Kohana_ORM extends Database_Query_Builder_Select {
     /**
      * Deletes a single row or multiple rows
      * 
-     * @return  int number of rows affected
+     * @return  int number of rows deleted
      */
     public function delete()
     {
@@ -348,7 +360,7 @@ class Kohana_ORM extends Database_Query_Builder_Select {
      * 
      * @param   string   alias of the has_many "through" relationship
      * @param   ORM      related ORM model
-     * @return  int      number of rows affected
+     * @return  int      number of rows removed
      */
     public function remove($alias, ORM $model)
     {
