@@ -475,28 +475,38 @@ class Kohana_ORM extends Database_Query_Builder_Select {
     {
         foreach ($this->_belongs_to as $alias => $details)
         {
-            $defaults['model'] = $alias;
-            $defaults['foreign_key'] = $alias.$this->_foreign_key_suffix;
+            if ( ! isset($details['model']))
+                $this->_belongs_to[$alias]['model'] = $alias;
             
-            $this->_belongs_to[$alias] = array_merge($defaults, $details);
+            if ( ! isset($details['foreign_key']))
+                $this->_belongs_to[$alias]['foreign_key'] = $alias.$this->_foreign_key_suffix;
         }
         
         foreach ($this->_has_one as $alias => $details)
         {
-            $defaults['model'] = $alias;
-            $defaults['foreign_key'] = $this->_model_name.$this->_foreign_key_suffix;
+            if ( ! isset($details['model']))
+                $this->_has_one[$alias]['model'] = $alias;
             
-            $this->_has_one[$alias] = array_merge($defaults, $details);
+            if ( ! isset($details['foreign_key']))
+                $this->_has_one[$alias]['foreign_key'] = $this->_model_name.$this->_foreign_key_suffix;
         }
         
         foreach ($this->_has_many as $alias => $details)
         {
-            $defaults['model'] = Inflector::singular($alias);
-            $defaults['foreign_key'] = $this->_model_name.$this->_foreign_key_suffix;
-            $defaults['through'] = NULL;
-            $defaults['far_key'] = Inflector::singular($alias).$this->_foreign_key_suffix;
+            if ( ! isset($details['model']))
+                $this->_has_many[$alias]['model'] = Inflector::singular($alias);
             
-            $this->_has_many[$alias] = array_merge($defaults, $details);
+            if ( ! isset($details['foreign_key']))
+                $this->_has_many[$alias]['foreign_key'] = $this->_model_name.$this->_foreign_key_suffix;
+            
+            if ( ! isset($details['through']))
+            {
+                $this->_has_many[$alias]['through'] = NULL;
+            }
+            elseif ( ! isset($details['far_key']))
+            {
+                $this->_has_many[$alias]['far_key'] = Inflector::singular($alias).$this->_foreign_key_suffix;
+            }
         }
     }
     

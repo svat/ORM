@@ -54,12 +54,12 @@ class Model_Auth_User extends ORM {
 			$field = $this->unique_key($value);
 		}
 
-		return (bool) DB::select(array('COUNT("*")', 'total_count'))
+		return (bool) DB::select(array('COUNT("*")', 'count'))
 			->from($this->_table_name)
 			->where($field, '=', $value)
 			->where($this->_primary_key, '!=', $this->primary_val())
 			->execute($this->_db)
-			->get('total_count');
+			->get('count');
 	}
 
 	/**
