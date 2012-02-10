@@ -4,12 +4,4 @@ This ORM is a modified version of the standard Kohana ORM.
 
 To use, create a file: application/classes/database/query/builder/where.php:
 
->abstract class Database_Query_Builder_Where extends Kohana_Database_Query_Builder_Where {
->
->    public function where_array(array $conditions)
->    {
->        $this->_where = $conditions;
->        
->        return $this;
->    }
->}
+> abstract class Database_Query_Builder_Where extends Kohana_Database_Query_Builder_Where
