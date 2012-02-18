@@ -9,6 +9,12 @@
  */
 class Model_Auth_Role extends ORM {
 
+    protected $_table_columns = array(
+        'id'       => array('data_type' => 'int'),
+        'name'     => array('data_type' => 'string'),
+        'description'    => array('data_type' => 'string'),
+    );
+
 	// Relationships
 	protected $_has_many = array('users' => array('through' => 'roles_users'));
 
