@@ -86,10 +86,6 @@ class Kohana_ORM extends Database_Query_Builder_Select {
 
 			$this->find();
 		}
-		elseif (isset($this->_record[$this->_primary_key]))
-		{
-			$this->where($this->_primary_key, '=', $this->_record[$this->_primary_key]);
-		}
 
 		$this->_prepare_relations();
 	}
@@ -102,7 +98,11 @@ class Kohana_ORM extends Database_Query_Builder_Select {
 	 */
 	public function __get($column)
 	{
-		if (isset($this->_belongs_to[$column]))
+		if (isset($this->_record[$column]))
+		{
+			return $this->_record[$column];
+		}
+		elseif (isset($this->_belongs_to[$column]))
 		{
 			return ORM::factory(
 				$this->_belongs_to[$column]['model'], 
@@ -137,10 +137,6 @@ class Kohana_ORM extends Database_Query_Builder_Select {
 
 			return $model->where($col, '=', $this->primary_val());
 		}
-		elseif (isset($this->_record[$column]))
-		{
-			return $this->_record[$column];
-		}
 		else
 		{
 			throw new Kohana_Exception('The :property property does not exist in the :class class', 
@@ -159,7 +155,7 @@ class Kohana_ORM extends Database_Query_Builder_Select {
 	{
 		if ($this->_model_name === NULL)
 		{
-			$this->_record[$column] = $value;
+			$this->_load_value($column, $value);
 		}
 		else
 		{
@@ -545,15 +541,45 @@ class Kohana_ORM extends Database_Query_Builder_Select {
 			->execute($this->_db)
 			->current();
 
+		$this->reset();
+
 		if ($result)
 		{
-			$this->_record = $result;
+			foreach ($result as $column => $value)
+			{
+				$this->_load_value($column, $value);
+			}
 		}
 
-		if (isset($this->_record[$this->_primary_key]))
+		return $this;
+	}
+
+	/**
+	 * Load value for each column
+	 * 
+	 * @return $this
+	 */
+	protected function _load_value($column, $value)
+	{
+		if (strpos($column, ':') !== FALSE)
 		{
-			$this->reset();
-			$this->where($this->_primary_key, '=', $this->_record[$this->_primary_key]);
+			list ($model, $column) = explode(':', $column, 2);
+
+			if ( ! isset($this->_record[$model]))
+			{
+				$this->_record[$model] = ORM::factory($model);
+			}
+			
+			$this->_record[$model]->_load_value($column, $value);
+		}
+		else
+		{
+			if ($column === $this->_primary_key)
+			{
+				$this->where($this->_primary_key, '=', $value);
+			}
+
+			$this->_record[$column] = $value;
 		}
 
 		return $this;
