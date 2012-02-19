@@ -213,6 +213,7 @@ class Kohana_ORM extends Database_Query_Builder_Select {
 	public function with($target_path)
 	{
 		$aliases = explode(':', $target_path);
+
 		$parent_model = $this;
 		$parent_path = $this->_table_name;
 
@@ -383,7 +384,7 @@ class Kohana_ORM extends Database_Query_Builder_Select {
 
 		if ($this->loaded())
 		{
-			$count->where($this->primary_key(), '!=', $this->primary_val());
+			$count->and_where($this->primary_key(), '!=', $this->primary_val());
 		}
 
 		return (bool) $count->execute($this->_db)->get('count');
